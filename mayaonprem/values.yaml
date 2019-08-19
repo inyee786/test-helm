@@ -1,0 +1,77 @@
+# Default values for MayaOnprem.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+server:
+  release: 1.0.0-ee
+  dockerSecret: mayaonprem-registry-secret
+  protocol: http
+  url:
+  httpNodePort: 30380
+  httpsNodePort: 30381
+  apiAuthAccessMode: unrestricted
+  serverDefaultAccessGrant: true
+  apiUiEnabled: true
+  setupName: mayaonprem
+  apiAuthExternalProviderEnabled: true
+  apiAuthExternalProviderConfigured: githubconfig
+  apiAuthInternalProviderEnabled: false
+  apiAuthInternalProviderConfigured:
+  apiAuthEnabler:
+  apiAuthGithubClientId:
+  apiAuthGithubClientSecret:
+  apiAuthGoogleClientId:
+  apiAuthGoogleClientSecret:
+  clusterDomain: cluster.local
+  featureSubscriptionDisable: true
+  subscriptionType:
+  featureBillingDisable: true
+  billingType: external
+  featureEmailDisable: true
+  senderEmailAddress:
+  senderEmailPassword:
+  featureDocsDisable: false
+  docsUrl: https://docs.mayaonline.io
+  featureChatBotDisable: true
+  slackConfigBotClientId:
+  slackConfigBotClientSecret:
+  slackNotificationWelcomeMessage:
+  featureKialiDisable: true
+  analyticsGoogleCode:
+
+mysql:
+  storageClass: openebs-jiva-default
+  storageCapacity: 50Gi
+
+elasticSearch:
+  storageClass: openebs-hostpath
+  storageCapacity: 50Gi
+  replicas: 1
+
+cassandra:
+  storageClass: openebs-hostpath
+  storageCapacity: 50Gi
+  replicas: 1
+
+mayaStore:
+  storageClass: cstor-storage-class
+  storageCapacity: 10Gi
+
+grafana:
+  storageClass: cstor-storage-class
+  storageCapacity: 50Gi
+
+cortex:
+  replicationFactor: 1
+  timeout: 5s
+
+alertStore:
+  replicationFactor: 1
+
+ingester:
+  replicas: 1
+
+querier:
+  replicas: 1
+
+

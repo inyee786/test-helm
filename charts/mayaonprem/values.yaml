@@ -1,7 +1,7 @@
 # Default values for MayaOnprem.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
+---
 server:
   release: 1.0.0-ee
   dockerSecret: mayaonprem-registry-secret
@@ -73,5 +73,3 @@ ingester:
 
 querier:
   replicas: 1
-
-

@@ -1,0 +1,74 @@
+---
+language: python
+
+env:
+  global:
+    - HELM_URL=https://storage.googleapis.com/kubernetes-helm
+    - HELM_TGZ=helm-v2.4.2-linux-amd64.tar.gz
+    - REPO_DIR=/home/travis/build/inyee786/test-helm
+    - YAMLLINT_VERSION=1.8.1
+    - HARBOR_CHART_URL=https://harbor-test.mayadata.io/chartrepo
+    - HARBOR_PROJECT_NAME=maya
+    - CHART_FOLDER=charts
+
+install:
+  # Installing Helm
+  - wget ${HELM_URL}/${HELM_TGZ}
+  - tar xzfv ${HELM_TGZ}
+  - PATH=`pwd`/linux-amd64/:$PATH
+  - helm init --client-only
+  # helm plugin to push helm chart
+  - helm plugin install https://github.com/chartmuseum/helm-push --version v0.7.1
+  # Installig pip deps
+  - sudo pip install yamllint=="${YAMLLINT_VERSION}"
+  - helm repo update
+  - helm repo add --password=${HARBOR_PASSWORD} --username=${HARBOR_USERNAME} maya ${HARBOR_CHART_URL}
+  # - helm repo add maya ${HARBOR_CHART_URL}/${HARBOR_PROJECT_NAME}
+
+script:
+  # Check charts format
+  - >
+     for dir in `ls ${REPO_DIR}/${CHART_FOLDER}`; do
+      helm lint ${REPO_DIR}/${CHART_FOLDER}/$dir
+      if [ $? != 0 ]; then
+       travis_terminate 1
+      fi
+     done
+  # Check YAML styling
+  - yamllint -c .yamllint.yml -s .travis.yml .yamllint.yml
+  - yamllint -c .yamllint.yml -s $(find . -type f -name "Chart.yaml")
+  - yamllint -c .yamllint.yml -s $(find . -type f -name "values.yaml")
+
+after_success:
+  - >
+    if [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then
+      # Temporary dir for storing new packaged charts and index files
+      BUILD_DIR=$(mktemp -d)
+
+      # Push temporary directory to the stack
+      pushd $BUILD_DIR
+
+      # Iterate over all charts are package them push it to Harbor
+      for dir in `ls ${REPO_DIR}/${CHART_FOLDER}`; do
+       helm dep update ${REPO_DIR}/${CHART_FOLDER}/$dir
+       helm package ${REPO_DIR}/${CHART_FOLDER}/$dir
+       helm push --username ${HARBOR_USERNAME} --password ${HARBOR_PASSWORD}  ${REPO_DIR}/${CHART_FOLDER}/$dir maya
+       if [ $? != 0 ]; then
+        travis_terminate 1
+       fi
+      done
+
+      # Indexing of charts
+      if [ -f index.yaml ]; then
+       helm repo index --url ${HARBOR_CHART_URL}/${HARBOR_PROJECT_NAME} --merge index.yaml .
+      else
+       helm repo index --url ${HARBOR_CHART_URL}/${HARBOR_PROJECT_NAME} .
+      fi
+
+      # Pop temporary directory from the stack
+      popd
+
+      # List all the contents that we will push
+      ls ${BUILD_DIR}
+
+    fi

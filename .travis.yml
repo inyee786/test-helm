@@ -52,7 +52,7 @@ after_success:
       for dir in `ls ${REPO_DIR}/${CHART_FOLDER}`; do
        helm dep update ${REPO_DIR}/${CHART_FOLDER}/$dir
        helm package ${REPO_DIR}/${CHART_FOLDER}/$dir
-       helm push --username ${HARBOR_USERNAME} --password ${HARBOR_PASSWORD}  ${REPO_DIR}/${CHART_FOLDER}/$dir maya
+       helm push --username ${HARBOR_USERNAME} --password ${HARBOR_PASSWORD}  ${REPO_DIR}/${CHART_FOLDER}/$dir ${HARBOR_CHART_URL}/maya
        if [ $? != 0 ]; then
         travis_terminate 1
        fi

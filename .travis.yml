@@ -22,7 +22,7 @@ install:
   # Installig pip deps
   - sudo pip install yamllint=="${YAMLLINT_VERSION}"
   - helm repo update
-  - helm repo add --password=${HARBOR_PASSWORD} --username=${HARBOR_USERNAME} maya ${HARBOR_CHART_URL}
+  # - helm repo add --password=${HARBOR_PASSWORD} --username=${HARBOR_USERNAME} maya ${HARBOR_CHART_URL}
   # - helm repo add maya ${HARBOR_CHART_URL}/${HARBOR_PROJECT_NAME}
 
 script:

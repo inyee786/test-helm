@@ -43,7 +43,7 @@ deploy:
   - provider: script
     script: ./build/deploy.sh
     on:
-      branch: master
+      tag: master
       condition: $TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+
   - provider: script
     script: ./build/deploy.sh

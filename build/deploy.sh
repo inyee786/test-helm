@@ -1,7 +1,7 @@
 echo "Ali"
 echo $TRAVIS_BRANCH
 echo ${TRAVIS_BRANCH}
-if [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then
+if [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' && $TRAVIS_TAG! = '' ]; then
     # Temporary dir for storing new packaged charts and index files
     echo $TRAVIS_BUILD_DIR
     echo ${HARBOR_PASSWORD}
@@ -10,7 +10,7 @@ if [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then
     BUILD_DIR=$(mktemp -d)
 
     # Push temporary directory to the stack
-    pushd $BUILD_DIR
+    cd $BUILD_DIR
 
     # Iterate over all charts are package them push it to Harbor
     for dir in `ls ${REPO_DIR}/${CHART_FOLDER}`; do
@@ -30,7 +30,7 @@ if [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then
     fi
 
     # Pop temporary directory from the stack
-    popd
+    cd ..
 
     # List all the contents that we will push
     ls ${BUILD_DIR}

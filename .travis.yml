@@ -35,7 +35,7 @@ script:
       fi
      done
   # Check YAML styling
-  - yamllint -c .yamllint.yml -s .travis.yml .yamllint.yml
+ # - yamllint -c .yamllint.yml -s .travis.yml .yamllint.yml
   - yamllint -c .yamllint.yml -s $(find . -type f -name "Chart.yaml")
   - yamllint -c .yamllint.yml -s $(find . -type f -name "values.yaml")
 
@@ -43,12 +43,12 @@ deploy:
   - provider: script
     script: ./build/deploy.sh
     on:
-      all_branch: "master"
+      all_branch: master
       condition: $TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+
   - provider: script
     script: ./build/deploy.sh
     on:
-      all_branches: "true"
+      all_branches: true
 # after_success:
 #   - >
 #     if [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then

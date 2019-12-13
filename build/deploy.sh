@@ -1,3 +1,6 @@
+echo "Ali"
+echo $TRAVIS_BRANCH
+echo ${TRAVIS_BRANCH}
 if [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then
     # Temporary dir for storing new packaged charts and index files
     echo $TRAVIS_BUILD_DIR

@@ -7,8 +7,8 @@ env:
     - HELM_TGZ=helm-v2.4.2-linux-amd64.tar.gz
     - REPO_DIR=/home/travis/build/inyee786/test-helm
     - YAMLLINT_VERSION=1.8.1
-    - HARBOR_CHART_URL=https://harbor-test.mayadata.io/chartrepo
-    - HARBOR_PROJECT_NAME=maya
+    # - HARBOR_CHART_URL=https://harbor-test.mayadata.io/chartrepo
+    # - HARBOR_PROJECT_NAME=maya
     - CHART_FOLDER=charts
 
 install:
@@ -39,36 +39,46 @@ script:
   - yamllint -c .yamllint.yml -s $(find . -type f -name "Chart.yaml")
   - yamllint -c .yamllint.yml -s $(find . -type f -name "values.yaml")
 
-after_success:
-  - >
-    if [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then
-      # Temporary dir for storing new packaged charts and index files
-      BUILD_DIR=$(mktemp -d)
+deploy:
+  - provider: script
+    script: ./build/deploy.sh
+    on:
+      all_branch: "master"
+      condition: $TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+
+  - provider: script
+    script: ./build/deploy.sh
+    on:
+      all_branches: "true"
+# after_success:
+#   - >
+#     if [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then
+#       # Temporary dir for storing new packaged charts and index files
+#       BUILD_DIR=$(mktemp -d)
 
-      # Push temporary directory to the stack
-      pushd $BUILD_DIR
+#       # Push temporary directory to the stack
+#       pushd $BUILD_DIR
 
-      # Iterate over all charts are package them push it to Harbor
-      for dir in `ls ${REPO_DIR}/${CHART_FOLDER}`; do
-       helm dep update ${REPO_DIR}/${CHART_FOLDER}/$dir
-       helm package ${REPO_DIR}/${CHART_FOLDER}/$dir
-       helm push --username ${HARBOR_USERNAME} --password ${HARBOR_PASSWORD}  ${REPO_DIR}/${CHART_FOLDER}/$dir ${HARBOR_CHART_URL}/maya
-       if [ $? != 0 ]; then
-        travis_terminate 1
-       fi
-      done
+#       # Iterate over all charts are package them push it to Harbor
+#       for dir in `ls ${REPO_DIR}/${CHART_FOLDER}`; do
+#        helm dep update ${REPO_DIR}/${CHART_FOLDER}/$dir
+#        helm package ${REPO_DIR}/${CHART_FOLDER}/$dir
+#        helm push --username ${HARBOR_USERNAME} --password ${HARBOR_PASSWORD}  ${REPO_DIR}/${CHART_FOLDER}/$dir ${HARBOR_CHART_URL}/maya
+#        if [ $? != 0 ]; then
+#         travis_terminate 1
+#        fi
+#       done
 
-      # Indexing of charts
-      if [ -f index.yaml ]; then
-       helm repo index --url ${HARBOR_CHART_URL}/${HARBOR_PROJECT_NAME} --merge index.yaml .
-      else
-       helm repo index --url ${HARBOR_CHART_URL}/${HARBOR_PROJECT_NAME} .
-      fi
+#       # Indexing of charts
+#       if [ -f index.yaml ]; then
+#        helm repo index --url ${HARBOR_CHART_URL}/${HARBOR_PROJECT_NAME} --merge index.yaml .
+#       else
+#        helm repo index --url ${HARBOR_CHART_URL}/${HARBOR_PROJECT_NAME} .
+#       fi
 
-      # Pop temporary directory from the stack
-      popd
+#       # Pop temporary directory from the stack
+#       popd
 
-      # List all the contents that we will push
-      ls ${BUILD_DIR}
+#       # List all the contents that we will push
+#       ls ${BUILD_DIR}
 
-    fi
+#     fi

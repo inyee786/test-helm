@@ -2,7 +2,7 @@ echo "Ali"
 echo $TRAVIS_BRANCH
 echo ${TRAVIS_BRANCH}
 echo $TRAVIS_TAG
-if [ !$TRAVIS_TAG ]; then
+if [ ! -z $TRAVIS_TAG ]; then
     # Temporary dir for storing new packaged charts and index files
     echo $TRAVIS_BUILD_DIR
     echo ${HARBOR_PASSWORD}

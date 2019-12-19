@@ -3,7 +3,7 @@ echo $TRAVIS_BRANCH
 echo ${TRAVIS_BRANCH}
 echo $TRAVIS_TAG
 # if [ ! -z $TRAVIS_TAG ]; then
-if [ $TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]; then
+if [[ $TRAVIS_TAG =~ [^v[0-9]+\.[0-9]+\.[0-9]+] ]]; then
     # Temporary dir for storing new packaged charts and index files
     echo $TRAVIS_BUILD_DIR
     echo ${HARBOR_PASSWORD}

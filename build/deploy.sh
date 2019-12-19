@@ -3,8 +3,7 @@ echo $TRAVIS_TAG v1.2.3
 echo "Ali"
 echo "Ali"
 echo $TRAVIS_TAG
-# if [ ! -z $TRAVIS_TAG ]; then
-if [ $TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]; then
+if [ ! -z $TRAVIS_TAG ]; then
     # Temporary dir for storing new packaged charts and index files
     echo $TRAVIS_BUILD_DIR
     echo ${HARBOR_PASSWORD}

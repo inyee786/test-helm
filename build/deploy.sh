@@ -8,7 +8,7 @@ if [ ! -z $TRAVIS_TAG ]; then
     echo $TRAVIS_BUILD_DIR
     echo ${HARBOR_PASSWORD}
     echo  ${HARBOR_USERNAME}
-    pushd $TRAVIS_BUILD_DIR
+    cd $TRAVIS_BUILD_DIR
     BUILD_DIR=$(mktemp -d)
 
     # Push temporary directory to the stack
